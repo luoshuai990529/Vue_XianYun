@@ -1,18 +1,18 @@
 <template>
   <el-form :model="form" ref="form" :rules="rules" class="form">
-    <el-form-item class="form-item">
-      <el-input placeholder="用户名/手机"></el-input>
+    <el-form-item class="form-item" prop="username">
+      <el-input placeholder="用户名/手机" v-model="form.username"></el-input>
     </el-form-item>
 
-    <el-form-item class="form-item">
-      <el-input placeholder="密码" type="password"></el-input>
+    <el-form-item class="form-item" prop="password">
+      <el-input placeholder="密码" type="password" v-model="form.password"></el-input>
     </el-form-item>
 
     <p class="form-text">
       <nuxt-link to="#">忘记密码</nuxt-link>
     </p>
 
-    <el-button class="submit" type="primary" @click="handleLoginSubmit">登录</el-button>
+    <el-button class="submit" type="primary" @click="handleLoginSubmit('form')">登录</el-button>
   </el-form>
 </template>
 
@@ -28,15 +28,53 @@ export default {
   data() {
     return {
       // 表单数据
-      form: {},
+      form: {
+        username: "", // 登录用户名/手机
+        password: "", // 登录密码
+      },
       // 表单规则
-      rules: {},
+      rules: {
+        username: [
+          {
+            required: true,
+            message: "请输入用户名",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   methods: {
     // 提交登录
-    handleLoginSubmit() {
-      console.log(this.form);
+    handleLoginSubmit(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          // 验证通过
+          const data = {
+            username: this.form.username,
+            password: this.form.password,
+          };
+          // 将数据存到store中
+          // 调用store的commit方法(用于同步操作)把用户的数据传过去 调用user下的setUserInfo方法
+          // this.$store.commit("user/setUserInfo", res.data);
+          // dispatch方法(用于异步操作)
+          this.$store.dispatch("user/loginIn",data).then(res=>{
+            // console.log('登录成功');
+            this.$message.success("登陆成功")
+            this.$router.replace("/")
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
   },
 };

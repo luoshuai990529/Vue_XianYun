@@ -8,7 +8,7 @@
           <div
             class="banner-image"
             :style="`
-                background:url(${item.url}) center center no-repeat;
+                background:url(${$axios.defaults.baseURL}${item.url}) center center no-repeat;
                 background-size:contain contain;
                 `"
           ></div>
@@ -32,14 +32,19 @@ export default {
     return {
       // 轮播图数据
       banners: [
-        {
-          url: "http://157.122.54.189:9095/assets/images/th03.jfif",
-        },
-        {
-          url: "http://157.122.54.189:9095/assets/images/th04.jfif",
-        },
+        
       ],
     };
+  },
+  mounted() {
+    // 请求banner轮播图数据
+    this.$axios({
+      url:"http://127.0.0.1:1337/scenics/banners",
+      method:"get"
+    }).then(res=>{
+      console.log(res);
+      this.banners= res.data.data
+    })
   },
 };
 </script>

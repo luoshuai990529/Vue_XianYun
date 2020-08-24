@@ -19,11 +19,11 @@
       <!-- 登录/用户信息 -->
       <el-row type="flex" align="middle">
         <!-- 如果用户存在则展示用户信息，用户数据来自store -->
-        <el-dropdown v-if="false">
+        <el-dropdown v-if="$store.state.user.userInfo.token">
           <el-row type="flex" align="middle" class="el-dropdown-link">
             <nuxt-link to="#">
-              <img src="http://157.122.54.189:9093/images/pic_sea.jpeg" />
-              用户名
+              <img :src="$axios.defaults.baseURL+$store.state.user.userInfo.user.defaultAvatar" />
+              {{$store.state.user.userInfo.user.nickname}}
             </nuxt-link>
             <i class="el-icon-caret-bottom el-icon--right"></i>
           </el-row>
@@ -46,10 +46,33 @@
 
 <script>
 export default {
+  data() {
+    return {};
+  },
   methods: {
     // 用户退出
-    handleLogout() {},
+    handleLogout() {
+      this.$confirm("是否退出当前登录用户？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$store.commit("user/loginOut");
+          this.$message({
+            type: "success",
+            message: "成功退出!",
+          });
+        })
+        .catch(() => {
+          return;
+        });
+    },
   },
+  mounted() {
+    console.log(this.$store.state);
+  },
+  watch: {},
 };
 </script>
 
@@ -95,6 +118,18 @@ export default {
       }
     }
 
+    /* 
+    当url等于 "/" 首页被选中  
+    当url 等于 "/..." 首页不要被选中
+    
+    当url等于 "/hotel" "/hotel?city=广州" 酒店被选中
+    */
+    // .nuxt-link-active 代表模糊匹配
+    /deep/ .nuxt-link-active:not(:first-child) {
+      background: #409eff;
+      color: #fff !important;
+    }
+    //.nuxt-link-exact-active 精确匹配
     /deep/ .nuxt-link-exact-active {
       background: #409eff;
       color: #fff !important;
