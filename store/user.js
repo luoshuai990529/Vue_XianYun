@@ -34,6 +34,7 @@ export const mutations = {
 // action专门用来做异步修改 仓库数据
 // action提交的是mutation，而不是直接变更状态
 // action可以包含任意异步操作
+// 放公共的异步操作方法
 export const actions = {
   loginIn({
     commit

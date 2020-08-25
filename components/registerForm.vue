@@ -98,6 +98,8 @@ export default {
           confirmButtonText: "确定",
           showCancelButton: false,
           type: "warning",
+        }).then(()=>{
+          
         });
         return;
       }
@@ -142,7 +144,15 @@ export default {
               method: "POST",
               data: props,
             }).then((res) => {
-              console.log(res.data);
+              // console.log(res.data);
+              this.$message({
+                type: 'success',
+                message: '注册成功!'
+              })
+              // 注册自定义事件给父组件
+              this.$emit("registSucess")
+            }).catch(err=>{
+              console.log(err);
             });
           }
         });

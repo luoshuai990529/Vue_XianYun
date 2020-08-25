@@ -21,7 +21,7 @@
         <LoginForm v-if="currentTab == 0" />
 
         <!-- 注册功能组件 -->
-        <RegisterForm v-if="currentTab == 1"/>
+        <RegisterForm v-if="currentTab == 1" @registSucess="registHandler" />
       </div>
     </el-row>
   </div>
@@ -33,7 +33,7 @@ import RegisterForm from "@/components/registerForm.vue";
 export default {
   components: {
     LoginForm,
-    RegisterForm
+    RegisterForm,
   },
   data() {
     return {
@@ -44,6 +44,11 @@ export default {
     // 切换登录注册处理函数，改变currentTab
     handleChangeTab(index) {
       this.currentTab = index;
+    },
+    // 处理注册成功后的事件
+    registHandler() {
+      // 改变currentTab索引
+      this.currentTab = 0;
     },
   },
 };
