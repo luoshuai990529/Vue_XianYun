@@ -65,13 +65,13 @@ export default {
           // 调用store的commit方法(用于同步操作)把用户的数据传过去 调用user下的setUserInfo方法
           // this.$store.commit("user/setUserInfo", res.data);
           // dispatch方法(用于异步操作)
-          this.$store.dispatch("user/loginIn",data).then(res=>{
+          this.$store.dispatch("user/loginIn", data).then((res) => {
             // console.log('登录成功');
-            this.$message.success("登陆成功")
-            this.$router.replace("/")
+            this.$message.success("登陆成功");
+            this.$router.replace("/");
           });
         } else {
-          console.log("error submit!!");
+          // console.log("error submit!!");
           return false;
         }
       });
