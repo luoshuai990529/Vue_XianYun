@@ -17,12 +17,14 @@
       <el-form-item label="出发城市">
         <!-- fetch-suggestions 返回输入建议的方法 -->
         <!-- select 点击选中建议项时触发 -->
+        <!-- :trigger-on-focus="false" 获取焦点的时候不自动加载建议列表 -->
         <el-autocomplete
           :fetch-suggestions="queryDepartSearch"
           placeholder="请搜索出发城市"
           @select="handleDepartSelect"
           class="el-autocomplete"
-          v-model="departure"
+          v-model="form.departCity"
+          :trigger-on-focus="false"
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="到达城市">
@@ -31,12 +33,19 @@
           placeholder="请搜索到达城市"
           @select="handleDestSelect"
           class="el-autocomplete"
-          v-model="distination"
+          v-model="form.distinatCity"
+          :trigger-on-focus="false"
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="出发时间">
         <!-- change 用户确认选择日期时触发 -->
-        <el-date-picker type="date" placeholder="请选择日期" style="width: 100%;" @change="handleDate"></el-date-picker>
+        <el-date-picker
+          type="date"
+          v-model="form.departDate"
+          placeholder="请选择日期"
+          style="width: 100%;"
+          @change="handleDate"
+        ></el-date-picker>
       </el-form-item>
       <el-form-item label>
         <el-button style="width:100%;" type="primary" icon="el-icon-search" @click="handleSubmit">搜索</el-button>
@@ -57,44 +66,73 @@ export default {
         { icon: "iconfont iconshuangxiang", name: "往返" },
       ],
       currentTab: 0,
-      // 目的地
-      distination:"",
-      // 出发地
-      departure:""
+      form: {
+        // 目的地
+        distinatCity: "",
+        distinatCode: "",
+        // 出发地
+        departCode: "",
+        departCity: "",
+        // 时间
+        departDate: "",
+      },
     };
   },
   methods: {
     // tab切换时触发
-    handleSearchTab(item, index) {},
+    handleSearchTab(item, index) {
+      console.log(item, index);
+    },
 
     // 出发城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
     // cb是回调函数是必须要执行的，接受数组，数组内部必须是由对象组件，对象必须要value属性
     queryDepartSearch(value, cb) {
-      console.log(value);
-      cb([
-        {value: "长沙"},
-        {value: "北京"},
-        {value: "上海"},
-      ]);
+      // console.log("当前输入的出发城市：" + value);
+      // cb([{ value: "长沙" }, { value: "北京" }, { value: "上海" }]);
+      const { departCity } = this.form;
+      this.$store
+        .dispatch("air/getFromCity", departCity)
+        .then((res) => {
+          // res就是返回回来的cityList
+          // console.log(res);
+          cb(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
     // 目标城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
     queryDestSearch(value, cb) {
-      cb([{ value: 1 }, { value: 2 }, { value: 3 }]);
+      const { distinatCity } = this.form;
+      this.$store
+        .dispatch("air/getFromCity", distinatCity)
+        .then((res) => {
+          // res就是返回回来的cityList
+          // console.log(res);
+          cb(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
 
     // 出发城市下拉选择时触发
     handleDepartSelect(item) {
-      console.log(item);
+      console.log("当前选择的出发城市为：" + item.name);
     },
 
     // 目标城市下拉选择时触发
-    handleDestSelect(item) {},
+    handleDestSelect(item) {
+      console.log("当前选择的目的地城市为：" + item.name);
+    },
 
     // 确认选择日期时触发
-    handleDate(value) {},
+    handleDate(value) {
+      console.log("选择日期:" + value);
+    },
 
     // 触发和目标城市切换时触发
     handleReverse() {},
