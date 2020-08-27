@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
   data() {
     return {
@@ -82,6 +83,13 @@ export default {
     // tab切换时触发
     handleSearchTab(item, index) {
       console.log(item, index);
+      if (index == 1) {
+        this.$confirm("当前业务暂时不提供往返", "提示", {
+          confirmButtonText: "确定",
+          showCancelButton: false,
+          type: "warning",
+        });
+      }
     },
 
     // 出发城市输入框获得焦点时触发
@@ -92,14 +100,22 @@ export default {
       // cb([{ value: "长沙" }, { value: "北京" }, { value: "上海" }]);
       const { departCity } = this.form;
       this.$store
-        .dispatch("air/getFromCity", departCity)
+        .dispatch("air/getFromCity", departCity.trim())
         .then((res) => {
           // res就是返回回来的cityList
-          // console.log(res);
-          cb(res);
+          console.log(res);
+          if (res.length > 0) {
+            this.form.departCity = res[0].value;
+            this.form.departCode = res[0].sort;
+          }
+          if (res) {
+            cb(res);
+          }
         })
         .catch((err) => {
-          console.log(err);
+          if (err) {
+            cb([]);
+          }
         });
     },
 
@@ -108,37 +124,102 @@ export default {
     queryDestSearch(value, cb) {
       const { distinatCity } = this.form;
       this.$store
-        .dispatch("air/getFromCity", distinatCity)
+        .dispatch("air/getFromCity", distinatCity.trim())
         .then((res) => {
           // res就是返回回来的cityList
           // console.log(res);
-          cb(res);
+          if (res.length > 0) {
+            this.form.distinatCity = res[0].value;
+            this.form.distinatCode = res[0].sort;
+          }
+          if (res) {
+            cb(res);
+          }
         })
         .catch((err) => {
-          console.log(err);
+          if (err) {
+            cb([]);
+          }
         });
     },
 
     // 出发城市下拉选择时触发
     handleDepartSelect(item) {
-      console.log("当前选择的出发城市为：" + item.name);
+      this.form.departCity = item.value;
+      this.form.departCode = item.sort;
+      console.log("出发城市：" + this.form.departCity);
     },
 
     // 目标城市下拉选择时触发
     handleDestSelect(item) {
-      console.log("当前选择的目的地城市为：" + item.name);
+      this.form.distinatCity = item.value;
+      this.form.distinatCode = item.sort;
+      console.log("到达城市：" + this.form.distinatCity);
     },
 
     // 确认选择日期时触发
     handleDate(value) {
-      console.log("选择日期:" + value);
+      this.form.departDate = moment(value).format("YYYY-MM-DD");
     },
 
     // 触发和目标城市切换时触发
-    handleReverse() {},
+    handleReverse() {
+      const { departCity, departCode, distinatCity, distinatCode } = this.form;
+
+      // 把出发城市传给到大城市
+      this.form.departCity = distinatCity;
+      this.form.departCode = distinatCode;
+      // 把到达城市传给出发城市
+      this.form.distinatCity = departCity;
+      this.form.distinatCode = departCode;
+    },
 
     // 提交表单是触发
-    handleSubmit() {},
+    handleSubmit() {
+      console.log(this.form);
+      // 表单验证数据
+      const rules = {
+        depart: {
+          value: this.form.departCity,
+          message: "请选择出发城市",
+        },
+        dest: {
+          value: this.form.distinatCity,
+          message: "请选择到达城市",
+        },
+        departDate: {
+          value: this.form.departDate,
+          message: "请选择出发时间",
+        },
+      };
+      let valid = true; // 表单验证结果
+
+      // console.log(Object.keys(rules));//["depart", "dest", "departDate"]
+      Object.keys(rules).forEach((v) => {
+        // 只要有一个结果不通过，就停止循环
+        if (!valid) return;
+        const item = rules[v];
+
+        // 数据字段为空
+        if (!item.value) {
+          valid = false;
+
+          this.$confirm(item.message, "提示", {
+            confirmButtonText: "确定",
+            showCancelButton: false,
+            type: "warning",
+          });
+        }
+      });
+
+      // 不通过验证，不需要往下执行
+      if (!valid) return;
+
+      this.$router.push({
+        path: "/air/flights",
+        query: this.form,
+      });
+    },
   },
   mounted() {},
 };

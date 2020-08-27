@@ -20,6 +20,11 @@ export const actions = {
   getFromCity({
     commit
   }, departCity) {
+    // 如果城市值为空，则直接返回resolve([])
+    if (!departCity) {
+      return Promise.resolve([])
+    }
+
     return this.$axios.get("/airs/city", {
         params: {
           name: departCity,
@@ -29,7 +34,7 @@ export const actions = {
         const cityList = res.data.data.map((v) => {
           return {
             ...v,
-            value: v.name
+            value: v.name.replace("市", "")
           };
         });
         // 将cityList返回出去，以便在搜索表单可以通过then获取
