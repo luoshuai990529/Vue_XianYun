@@ -33,18 +33,20 @@
           placeholder="请搜索到达城市"
           @select="handleDestSelect"
           class="el-autocomplete"
-          v-model="form.distinatCity"
+          v-model="form.destCity"
           :trigger-on-focus="false"
         ></el-autocomplete>
       </el-form-item>
       <el-form-item label="出发时间">
         <!-- change 用户确认选择日期时触发 -->
+        <!-- picker-options日期选择框的配置对象 -->
         <el-date-picker
           type="date"
           v-model="form.departDate"
           placeholder="请选择日期"
           style="width: 100%;"
           @change="handleDate"
+          :picker-options="pickerOptions"
         ></el-date-picker>
       </el-form-item>
       <el-form-item label>
@@ -69,13 +71,22 @@ export default {
       currentTab: 0,
       form: {
         // 目的地
-        distinatCity: "",
-        distinatCode: "",
+        destCity: "",
+        destCode: "",
         // 出发地
         departCode: "",
         departCity: "",
         // 时间
         departDate: "",
+      },
+      // 日期选择框的配置对象
+      pickerOptions: {
+        disabledDate(date) {
+          // console.log(date);
+          // 判断日期小于当前日期的都返回true
+          const caTime = date.getTime(); //获取时间戳
+          return Date.now() > caTime + 24 * 60 * 60 * 1000;
+        },
       },
     };
   },
@@ -104,6 +115,7 @@ export default {
         .then((res) => {
           // res就是返回回来的cityList
           console.log(res);
+          // 默认选中列表的第一个元素
           if (res.length > 0) {
             this.form.departCity = res[0].value;
             this.form.departCode = res[0].sort;
@@ -122,15 +134,17 @@ export default {
     // 目标城市输入框获得焦点时触发
     // value 是选中的值，cb是回调函数，接收要展示的列表
     queryDestSearch(value, cb) {
-      const { distinatCity } = this.form;
+      const { destCity } = this.form;
       this.$store
-        .dispatch("air/getFromCity", distinatCity.trim())
+        .dispatch("air/getFromCity", destCity.trim())
         .then((res) => {
           // res就是返回回来的cityList
-          // console.log(res);
+          res.forEach(v=>{
+            console.log(v.sort);
+          })
           if (res.length > 0) {
-            this.form.distinatCity = res[0].value;
-            this.form.distinatCode = res[0].sort;
+            this.form.destCity = res[0].value;
+            this.form.destCode = res[0].sort;
           }
           if (res) {
             cb(res);
@@ -152,9 +166,9 @@ export default {
 
     // 目标城市下拉选择时触发
     handleDestSelect(item) {
-      this.form.distinatCity = item.value;
-      this.form.distinatCode = item.sort;
-      console.log("到达城市：" + this.form.distinatCity);
+      this.form.destCity = item.value;
+      this.form.destCode = item.sort;
+      console.log("到达城市：" + this.form.destCity);
     },
 
     // 确认选择日期时触发
@@ -164,14 +178,24 @@ export default {
 
     // 触发和目标城市切换时触发
     handleReverse() {
-      const { departCity, departCode, distinatCity, distinatCode } = this.form;
-
-      // 把出发城市传给到大城市
-      this.form.departCity = distinatCity;
-      this.form.departCode = distinatCode;
-      // 把到达城市传给出发城市
-      this.form.distinatCity = departCity;
-      this.form.distinatCode = departCode;
+      // const { departCity, departCode, destCity, destCode } = this.form;
+      // // 把出发城市传给到大城市
+      // this.form.departCity = destCity;
+      // this.form.departCode = destCode;
+      // // 把到达城市传给出发城市
+      // this.form.destCity = departCity;
+      // this.form.destCode = departCode;
+      [
+        this.form.departCity,
+        this.form.departCode,
+        this.form.destCity,
+        this.form.destCode,
+      ] = [
+        this.form.destCity,
+        this.form.destCode,
+        this.form.departCity,
+        this.form.departCode,
+      ];
     },
 
     // 提交表单是触发
@@ -184,7 +208,7 @@ export default {
           message: "请选择出发城市",
         },
         dest: {
-          value: this.form.distinatCity,
+          value: this.form.destCity,
           message: "请选择到达城市",
         },
         departDate: {

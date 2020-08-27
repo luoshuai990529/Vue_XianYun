@@ -19,6 +19,10 @@ export default {
         hid: 'description',
         name: 'description',
         content: pkg.description
+      },
+      {
+        name:"referrer",
+        content:"no-referrer"
       }
     ],
     link: [{

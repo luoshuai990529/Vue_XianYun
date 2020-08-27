@@ -40,5 +40,12 @@ export const actions = {
         // 将cityList返回出去，以便在搜索表单可以通过then获取
         return cityList;
       });
+  },
+
+  // 获取特价机票
+  getCheapTicket() {
+    return this.$axios.get("/airs/sale").then(res => {
+      return res.data.data;
+    })
   }
 };

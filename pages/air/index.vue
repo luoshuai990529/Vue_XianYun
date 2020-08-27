@@ -38,15 +38,86 @@
     </h2>
 
     <!-- 特价机票 -->
-    <div class="air-sale"></div>
+    <div class="air-sale">
+      <el-row type="flex" class="air-sale-pic" justify="space-between">
+        <!-- v-for="(item, index) in sales" :key="index" -->
+        <el-col :span="6" >
+          <nuxt-link
+            :to="`/air/flights?departCity=广州&departCode=CAN&destCity=上海&destCode=SHA&departDate=2020-08-27`"
+          >
+            <img src="@/assets/images/cansha.jpg" />
+            <el-row class="layer-bar" type="flex" justify="space-between">
+              <span>广州-上海</span>
+              <span>￥698</span>
+            </el-row>
+          </nuxt-link>
+        </el-col>
+         <el-col :span="6" >
+          <nuxt-link
+            :to="`/air/flights?departCity=北京&departCode=BJS&destCity=上海&destCode=SHA&departDate=2020-08-27`"
+          >
+            <img src="@/assets/images/bjs.jpg" />
+            <el-row class="layer-bar" type="flex" justify="space-between">
+              <span>北京-上海</span>
+              <span>￥640</span>
+            </el-row>
+          </nuxt-link>
+        </el-col>
+         <el-col :span="6" >
+          <nuxt-link
+            :to="`/air/flights?departCity=上海&departCode=SHA&destCity=成都&destCode=CTU&departDate=2020-08-27`"
+          >
+            <img src="@/assets/images/gys.jpg" />
+            <el-row class="layer-bar" type="flex" justify="space-between">
+              <span>上海-成都</span>
+              <span>￥768</span>
+            </el-row>
+          </nuxt-link>
+        </el-col>
+         <el-col :span="6" >
+          <nuxt-link
+            :to="`/air/flights?departCity=天津&departCode=TSN&destCity=广元&destCode=GYS&departDate=2020-08-27`"
+          >
+            <img src="@/assets/images/tj.jpg" />
+            <el-row class="layer-bar" type="flex" justify="space-between">
+              <span>天津-广元</span>
+              <span>￥740</span>
+            </el-row>
+          </nuxt-link>
+        </el-col>
+      </el-row>
+    </div>
   </section>
 </template>
 
 <script>
 import searchForm from "@/components/air/searchForm";
 export default {
+  data() {
+    return {
+      sales: [
+        {
+          cover:
+            "https://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/s%3D220/sign=9154c841bcfd5266a32b3b169b199799/3812b31bb051f8199687c7e0d0b44aed2f73e7fe.jpg",
+          departCity: "广州",
+          departCode: "CAN",
+          departDate: "2019-06-17",
+          destCity: "上海",
+          destCode: "SHA",
+          price: 760,
+        },
+      ],
+    };
+  },
   components: {
     searchForm,
+  },
+  mounted() {
+    // 发送请求请求特价机票
+    this.$store.dispatch("air/getCheapTicket").then((res) => {
+      console.log(res);
+      // this.sales = res;
+    });
   },
 };
 </script>
