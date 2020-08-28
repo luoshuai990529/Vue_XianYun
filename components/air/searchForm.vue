@@ -114,7 +114,7 @@ export default {
         .dispatch("air/getFromCity", departCity.trim())
         .then((res) => {
           // res就是返回回来的cityList
-          console.log(res);
+          // console.log(res);
           // 默认选中列表的第一个元素
           if (res.length > 0) {
             this.form.departCity = res[0].value;
@@ -139,9 +139,9 @@ export default {
         .dispatch("air/getFromCity", destCity.trim())
         .then((res) => {
           // res就是返回回来的cityList
-          res.forEach(v=>{
-            console.log(v.sort);
-          })
+          // res.forEach(v=>{
+          //   console.log(v.sort);
+          // })
           if (res.length > 0) {
             this.form.destCity = res[0].value;
             this.form.destCode = res[0].sort;
