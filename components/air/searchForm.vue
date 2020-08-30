@@ -242,7 +242,7 @@ export default {
       // 添加到本地存储
       // 本地有数据就从本地获取，没有就获取一个空数组
       const airs = JSON.parse(localStorage.getItem("airs") || `[]`);
-      airs.push(this.form);
+      airs.unshift(this.form);
       localStorage.setItem("airs", JSON.stringify(airs));
 
       this.$router.push({

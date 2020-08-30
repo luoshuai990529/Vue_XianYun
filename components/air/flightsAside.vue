@@ -19,13 +19,13 @@
     </div>
 
     <div class="history">
-      <h5>历史查询</h5>
+      <h5>最近历史查询记录</h5>
       <nuxt-link
         :to="`/air/flights?departCity=${item.departCity}&departCode=${item.departCode}&destCity=${item.destCity}&destCode=${item.destCode}&departDate=${item.departDate}`"
         v-for="(item, index) in airsLog"
         :key="index"
       >
-        <el-row type="flex" justify="space-between" align="middle" class="history-item">
+        <el-row v-if="index<6" type="flex" justify="space-between" align="middle" class="history-item">
           <div class="air-info">
             <div class="to-from">{{item.departCity}} - {{item.destCity}}</div>
             <p>{{item.departDate}}</p>
@@ -33,6 +33,7 @@
           <span>选择</span>
         </el-row>
       </nuxt-link>
+      <p>…………</p>
     </div>
   </div>
 </template>

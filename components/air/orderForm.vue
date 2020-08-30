@@ -1,5 +1,6 @@
 <template>
   <div class="main">
+    <input type="hidden" :value="allPrice" />
     <div class="air-column">
       <h2>剩机人</h2>
       <el-form class="member-info">
@@ -85,7 +86,6 @@ export default {
           id: "",
         },
       ],
-
       insurances: [], // 保险数据
       contactName: "", // 联系人名字
       contactPhone: "", // 联系人电话
@@ -160,6 +160,7 @@ export default {
 
     // 提交订单
     handleSubmit() {
+      // 将需要提供的数据提前放到一个对象中，seat_xid和air通过父组件传过来data获取
       const orderData = {
         users: this.users,
         insurances: this.insurances,
@@ -171,15 +172,18 @@ export default {
         air: this.data.id,
       };
 
+      //通过Vuex中state获取用户登录信息：token值
       const {
         user: { userInfo },
       } = this.$store.state;
+
+      //   console.log(userInfo);
 
       this.$message({
         message: "正在生成订单！请稍等",
         type: "success",
       });
-
+      // 发送请求
       this.$axios({
         url: `/airorders`,
         method: "POST",
@@ -189,7 +193,7 @@ export default {
         },
       })
         .then((res) => {
-          // 跳转到付款页
+          // 成功跳转到付款页
           this.$router.push({
             path: "/air/pay",
           });
@@ -203,6 +207,28 @@ export default {
             type: "warning",
           });
         });
+    },
+  },
+  computed: {
+    // 计算总价格
+    allPrice() {
+      console.log("计算属性计算总价格：allPrice::::");
+      let price = 0;
+      let len = this.users.length;
+
+      price += this.data.seat_infos.org_settle_price * len;
+
+      this.insurances.forEach((v) => {
+        price += this.data.insurances[v - 1].price * len;
+      });
+
+      price += this.data.airport_tax_audlet * len;
+      
+      console.log(price);
+      // 触发设置总金额事件
+      this.$emit("setAllPrice", price);
+
+      return price;
     },
   },
 };
