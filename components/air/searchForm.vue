@@ -239,6 +239,12 @@ export default {
       // 不通过验证，不需要往下执行
       if (!valid) return;
 
+      // 添加到本地存储
+      // 本地有数据就从本地获取，没有就获取一个空数组
+      const airs = JSON.parse(localStorage.getItem("airs") || `[]`);
+      airs.push(this.form);
+      localStorage.setItem("airs", JSON.stringify(airs));
+
       this.$router.push({
         path: "/air/flights",
         query: this.form,

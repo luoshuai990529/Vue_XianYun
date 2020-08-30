@@ -85,7 +85,7 @@ export default {
   mounted() {},
   methods: {
     handlerFilter() {
-      console.log(this.filtValue);
+      // console.log(this.filtValue);
       const {
         airportName,
         departTime,
@@ -96,13 +96,11 @@ export default {
       let arr = this.data.flights;
 
       if (airportName) {
-        console.log("过滤airportName" + airportName);
         arr = arr.filter((v) => {
           return v.org_airport_name === airportName;
         });
       }
       if (departTime) {
-        console.log("过滤departTime" + departTime);
         arr = arr.filter((v) => {
           const [from, to] = departTime.split(","); // [6,12]
           const start = +v.dep_time.split(":")[0];
@@ -110,13 +108,11 @@ export default {
         });
       }
       if (airlineName) {
-        console.log("过滤airlineName" + airlineName);
         arr = arr.filter((v) => {
           return v.airline_name === airlineName;
         });
       }
       if (planeSize) {
-        console.log("过滤planeSize" + planeSize);
         arr = arr.filter((v) => {
           return v.plane_size === planeSize;
         });
@@ -127,43 +123,26 @@ export default {
     // 选择机场时候触发
     handleAirport(value) {
       this.filtValue.airportName = value;
-      // 过滤出机场名和选择机场相同的数组
       this.handlerFilter();
-      //   const arr = this.data.flights.filter((v) => v.org_airport_name === value);
-      //   this.$emit("setDataList", arr);
+
     },
 
     // 选择出发时间时候触发
     handleFlightTimes(value) {
       this.filtValue.departTime = value;
       this.handlerFilter();
-      //   const [from, to] = value.split(","); // [6,12]
-      //   const arr = this.data.flights.filter((v) => {
-      //     // 出发时间小时
-      //     const start = +v.dep_time.split(":")[0];
-      //     // console.log(
-      //     //   "start和from、to比较：start:" + start + "from:" + from,
-      //     //   "to:" + to
-      //     // );
-      //     return start >= from && start < to;
-      //   });
-      //   this.$emit("setDataList", arr);
     },
 
     // 选择航空公司时候触发
     handleCompany(value) {
       this.filtValue.airlineName = value;
       this.handlerFilter();
-      //   const arr = this.data.flights.filter((v) => v.airline_name === value);
-      //   this.$emit("setDataList", arr);
     },
 
     // 选择机型时候触发
     handleAirSize(value) {
       this.filtValue.planeSize = value;
       this.handlerFilter();
-      //   const arr = this.data.flights.filter((v) => v.plane_size === value);
-      //   this.$emit("setDataList", arr);
     },
 
     // 撤销条件时候触发

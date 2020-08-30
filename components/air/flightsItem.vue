@@ -46,7 +46,11 @@
             </el-col>
             <el-col :span="5" class="price">￥{{item.par_price}}</el-col>
             <el-col :span="3" class="choose-button">
-              <el-button type="warning" size="mini">选定</el-button>
+              <el-button
+                type="warning"
+                size="mini"
+                @click="handleChoose(data.id, item.seat_xid)"
+              >>选定</el-button>
               <p>剩余：{{item.discount}}</p>
             </el-col>
           </el-row>
@@ -75,8 +79,19 @@ export default {
     // console.log(this.data);
   },
   methods: {
+    // 点击显示隐藏函数
     handleShowRecommend() {
       this.showRecommend = !this.showRecommend;
+    },
+    // 点击选定按钮触发函数
+    handleChoose(id, seatId) {
+      this.$router.push({
+        path: "/air/order",
+        query: {
+          id,
+          seat_xid: seatId,
+        },
+      });
     },
   },
   computed: {

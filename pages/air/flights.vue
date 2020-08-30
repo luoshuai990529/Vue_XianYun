@@ -5,7 +5,11 @@
       <div class="flights-content">
         <!-- 过滤条件 -->
         <div>
-          <flightsFilters v-if="cacheFlightsData" :data="cacheFlightsData" @setDataList="setDataList" />
+          <flightsFilters
+            v-if="cacheFlightsData"
+            :data="cacheFlightsData"
+            @setDataList="setDataList"
+          />
         </div>
 
         <!-- 航班头部布局 -->
@@ -37,6 +41,7 @@
       <!-- 侧边栏 -->
       <div class="aside">
         <!-- 侧边栏组件 -->
+        <flightsAside />
       </div>
     </el-row>
   </section>
@@ -45,8 +50,12 @@
 <script>
 import moment from "moment";
 import flightsListHead from "@/components/air/flightsListHead.vue";
+// 引入机票列表信息组件
 import flightsItem from "@/components/air/flightsItem.vue";
+// 引入筛选器
 import flightsFilters from "@/components/air/flightsFilters.vue";
+// 引入侧边栏
+import flightsAside from "@/components/air/flightsAside.vue";
 export default {
   data() {
     return {
@@ -64,6 +73,11 @@ export default {
       pageIndex: 1, // 当前页数
       pageSize: 5, // 显示条数
     };
+  },
+  watch: {
+    $route() {
+      this.getFlightData();
+    },
   },
   methods: {
     //   获取机票信息
@@ -121,6 +135,7 @@ export default {
     flightsListHead,
     flightsItem,
     flightsFilters,
+    flightsAside,
   },
 };
 </script>
