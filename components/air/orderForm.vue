@@ -193,9 +193,16 @@ export default {
         },
       })
         .then((res) => {
+          const {
+            data: { id },
+          } = res.data;
+          // console.log(id);
           // 成功跳转到付款页
           this.$router.push({
             path: "/air/pay",
+            query: {
+              id,
+            },
           });
         })
         .catch((err) => {
@@ -223,7 +230,7 @@ export default {
       });
 
       price += this.data.airport_tax_audlet * len;
-      
+
       console.log(price);
       // 触发设置总金额事件
       this.$emit("setAllPrice", price);

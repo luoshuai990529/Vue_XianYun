@@ -205,10 +205,12 @@ export default {
       const rules = {
         depart: {
           value: this.form.departCity,
+          code:this.form.departCode,
           message: "请选择出发城市",
         },
         dest: {
           value: this.form.destCity,
+          code:this.form.destCode,
           message: "请选择到达城市",
         },
         departDate: {
@@ -225,7 +227,7 @@ export default {
         const item = rules[v];
 
         // 数据字段为空
-        if (!item.value) {
+        if (!item.value||!item.code) {
           valid = false;
 
           this.$confirm(item.message, "提示", {
