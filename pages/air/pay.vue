@@ -72,44 +72,63 @@ export default {
   destroyed() {
     clearInterval(this.timer);
   },
+  watch: {
+    /* 
+      不管token有没有变化，都会先触发一次
+      handler:"someMethod",
+      immediate:true
+    */
+    "$store.state.user.userInfo.token": {
+      handler: function (val) {
+        // this.$store.state.user.userInfo.token
+        if (this.$store.state.user.userInfo.token) {
+          console.log("触发监听器");
+          console.log(val);
+
+          // 获取route传递回来的id
+          const { id } = this.$route.query;
+          //   获取用户信息
+          const {
+            user: { userInfo },
+          } = this.$store.state;
+
+          // 请求二维码
+          this.$axios({
+            url: `airorders/${id}`,
+            headers: {
+              Authorization: `Bearer ${val}`,
+            },
+          }).then((res) => {
+            // price 用于展示
+            const { payInfo, price } = res.data;
+            this.price = price;
+            this.payInfo = payInfo;
+            console.log(payInfo,price);
+            // 生成二维码到canvas
+            const stage = document.querySelector("#qrcode-stage");
+            QRCode.toCanvas(stage, payInfo.code_url, {
+              width: 200,
+            });
+
+            this.timer = setInterval(async () => {
+              const isResolve = await this.isPay(payInfo);
+              console.log(isResolve);
+              if (isResolve) {
+                clearInterval(this.timer);
+                return;
+              }
+            }, 3000);
+          });
+        }
+      },
+      immediate: true,
+    },
+  },
   mounted() {
     // 这个处理方法是有缺陷的，不100%准确
     // userInfo在页面加载完才赋值
-    setTimeout((v) => {
-      // 获取route传递回来的id
-      const { id } = this.$route.query;
-      //   获取用户信息
-      const {
-        user: { userInfo },
-      } = this.$store.state;
-
-      // 请求二维码
-      this.$axios({
-        url: `airorders/${id}`,
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      }).then((res) => {
-        // price 用于展示
-        const { payInfo, price } = res.data;
-        this.price = price;
-        this.payInfo = payInfo;
-        // 生成二维码到canvas
-        const stage = document.querySelector("#qrcode-stage");
-        QRCode.toCanvas(stage, payInfo.code_url, {
-          width: 200,
-        });
-
-        this.timer = setInterval(async () => {
-          const isResolve = await this.isPay(payInfo);
-          console.log(isResolve);
-          if (isResolve) {
-            clearInterval(this.timer);
-            return;
-          }
-        }, 3000);
-      });
-    }, 200);
+    // setTimeout((v) => {
+    // }, 200);
   },
 };
 </script>
