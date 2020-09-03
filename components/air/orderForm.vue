@@ -53,7 +53,7 @@
           <el-form-item label="手机">
             <el-input placeholder="请输入内容" v-model="contactPhone">
               <template slot="append">
-                <el-button @click="handleSendCaptcha">发送验证码</el-button>
+                <el-button @click="handleSendCaptcha">{{countDown.label}}</el-button>
               </template>
             </el-input>
           </el-form-item>
@@ -80,6 +80,11 @@ export default {
   data() {
     return {
       // 用户数据
+      countDown: {
+        time: 60, //定时时间
+        label: "发送验证码",
+        isGoing: false, //是否开始计时
+      },
       users: [
         {
           username: "",
@@ -123,7 +128,7 @@ export default {
       }
     },
     // 发送手机验证码
-    handleSendCaptcha() {
+    async handleSendCaptcha() {
       if (!this.contactPhone) {
         this.$confirm("手机号码不能为空", "提示", {
           confirmButtonText: "确定",
@@ -132,7 +137,6 @@ export default {
         });
         return;
       }
-      console.log(/^1[3456789]\d{9}$/.test(this.contactPhone));
       if (!/^1[3456789]\d{9}$/.test(this.contactPhone)) {
         this.$confirm("手机号码格式错误", "提示", {
           confirmButtonText: "确定",
@@ -142,24 +146,46 @@ export default {
         return;
       }
 
-      this.$axios({
-        url: `/captchas`,
-        method: "POST",
-        data: {
+      if (this.countDown.isGoing) {
+        return;
+      } else {
+        const res = await this.$axios.post("/captchas", {
           tel: this.contactPhone,
-        },
-      }).then((res) => {
+        });
         const { code } = res.data;
         this.$confirm(`模拟手机验证码为：${code}`, "提示", {
           confirmButtonText: "确定",
           showCancelButton: false,
           type: "warning",
         });
-      });
+
+        this.countDown.isGoing = true;
+        this.countDown.label = `(${this.countDown.time}s)重新发送`;
+        // 开启倒计时
+        this.countDown.timeID = setInterval(() => {
+          this.countDown.time--;
+          this.countDown.label = `(${this.countDown.time}s)重新发送`;
+          if (this.countDown.time < 0) {
+            clearInterval(this.countDown.timeID);
+            this.countDown.label = "重新发送";
+            this.countDown.isGoing = false;
+            this.countDown.time = 60;
+          }
+        }, 1000);
+      }
     },
 
     // 提交订单
     handleSubmit() {
+      // this.$refs.form.validate((valid) => {
+      //   if (valid) {
+      //     alert("submit!");
+      //   } else {
+      //     console.log("error submit!!");
+      //     return false;
+      //   }
+      // });
+
       // 将需要提供的数据提前放到一个对象中，seat_xid和air通过父组件传过来data获取
       const orderData = {
         users: this.users,
@@ -179,10 +205,6 @@ export default {
 
       //   console.log(userInfo);
 
-      this.$message({
-        message: "正在生成订单！请稍等",
-        type: "success",
-      });
       // 发送请求
       this.$axios({
         url: `/airorders`,
@@ -193,6 +215,10 @@ export default {
         },
       })
         .then((res) => {
+          this.$message({
+            message: "正在生成订单！请稍等",
+            type: "success",
+          });
           const {
             data: { id },
           } = res.data;
@@ -219,7 +245,6 @@ export default {
   computed: {
     // 计算总价格
     allPrice() {
-      console.log("计算属性计算总价格：allPrice::::");
       let price = 0;
       let len = this.users.length;
 

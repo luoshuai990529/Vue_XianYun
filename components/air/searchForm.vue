@@ -215,6 +215,7 @@ export default {
         },
         departDate: {
           value: this.form.departDate,
+          code:this.form.departDate,
           message: "请选择出发时间",
         },
       };
@@ -227,7 +228,7 @@ export default {
         const item = rules[v];
 
         // 数据字段为空
-        if (!item.value||!item.code) {
+        if (!item.value || !item.code) {
           valid = false;
 
           this.$confirm(item.message, "提示", {
