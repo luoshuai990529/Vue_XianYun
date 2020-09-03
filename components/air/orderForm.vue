@@ -203,43 +203,47 @@ export default {
         user: { userInfo },
       } = this.$store.state;
 
-      //   console.log(userInfo);
-
-      // 发送请求
-      this.$axios({
-        url: `/airorders`,
-        method: "POST",
-        data: orderData,
-        headers: {
-          Authorization: `Bearer ${userInfo.token || "NO TOKEN"}`,
-        },
-      })
-        .then((res) => {
-          this.$message({
-            message: "正在生成订单！请稍等",
-            type: "success",
-          });
-          const {
-            data: { id },
-          } = res.data;
-          // console.log(id);
-          // 成功跳转到付款页
-          this.$router.push({
-            path: "/air/pay",
-            query: {
-              id,
-            },
-          });
+      // 如果没有登录，跳到登录页并将参数传过去
+      if (!userInfo.token) {
+        let params = location.search.split("?")[1];
+        this.$router.push({path:`/user/login?${params}`});
+      } else {
+        // 发送请求
+        this.$axios({
+          url: `/airorders`,
+          method: "POST",
+          data: orderData,
+          headers: {
+            Authorization: `Bearer ${userInfo.token || "NO TOKEN"}`,
+          },
         })
-        .catch((err) => {
-          const { message } = err.response.data;
-          // 警告提示
-          this.$confirm(message, "提示", {
-            confirmButtonText: "确定",
-            showCancelButton: false,
-            type: "warning",
+          .then((res) => {
+            this.$message({
+              message: "正在生成订单！请稍等",
+              type: "success",
+            });
+            const {
+              data: { id },
+            } = res.data;
+            // console.log(id);
+            // 成功跳转到付款页
+            this.$router.push({
+              path: "/air/pay",
+              query: {
+                id,
+              },
+            });
+          })
+          .catch((err) => {
+            const { message } = err.response.data;
+            // 警告提示
+            this.$confirm(message, "提示", {
+              confirmButtonText: "确定",
+              showCancelButton: false,
+              type: "warning",
+            });
           });
-        });
+      }
     },
   },
   computed: {

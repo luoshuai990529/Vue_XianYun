@@ -21,15 +21,15 @@
         <!-- 如果用户存在则展示用户信息，用户数据来自store -->
         <el-dropdown v-if="$store.state.user.userInfo.token">
           <el-row type="flex" align="middle" class="el-dropdown-link">
-            <nuxt-link to="#">
+            <a href="#" @click.prevent="">
               <img :src="$axios.defaults.baseURL+$store.state.user.userInfo.user.defaultAvatar" />
               {{$store.state.user.userInfo.user.nickname}}
-            </nuxt-link>
+            </a>
             <i class="el-icon-caret-bottom el-icon--right"></i>
           </el-row>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>
-              <nuxt-link to="#">个人中心</nuxt-link>
+              <nuxt-link to="#" @click.prevent="">个人中心</nuxt-link>
             </el-dropdown-item>
             <el-dropdown-item>
               <div @click="handleLogout">退出</div>
