@@ -205,17 +205,17 @@ export default {
       const rules = {
         depart: {
           value: this.form.departCity,
-          code:this.form.departCode,
+          code: this.form.departCode,
           message: "请选择出发城市",
         },
         dest: {
           value: this.form.destCity,
-          code:this.form.destCode,
+          code: this.form.destCode,
           message: "请选择到达城市",
         },
         departDate: {
           value: this.form.departDate,
-          code:this.form.departDate,
+          code: this.form.departDate,
           message: "请选择出发时间",
         },
       };
@@ -245,6 +245,20 @@ export default {
       // 添加到本地存储
       // 本地有数据就从本地获取，没有就获取一个空数组
       const airs = JSON.parse(localStorage.getItem("airs") || `[]`);
+
+      console.log(JSON.parse(localStorage.getItem("airs")));
+      if(localStorage.getItem("airs")){
+        JSON.parse(localStorage.getItem("airs")).forEach((item, index) => {
+        // 判断本地存储中存储过这个数据没有，如果存储过 获取index，删除再添加
+        if (
+          item.destCity == this.form.destCity &&
+          item.departCity == this.form.departCity &&
+          item.departDate == this.form.departDate
+        ) {
+          airs.splice(index,1);
+        }
+      });
+      }
       airs.unshift(this.form);
       localStorage.setItem("airs", JSON.stringify(airs));
 
